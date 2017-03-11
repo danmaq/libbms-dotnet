@@ -43,8 +43,7 @@ module Parser =
         |]
 
     let genre lines meta =
-        let p = createMetaParsers |> Array.map (fun f -> lines |> f)
-        p
+        createMetaParsers |> Array.fold (fun a e -> e lines a) meta
 
     let availableLine lines =
         lines |> Array.filter (regex "^#").IsMatch
