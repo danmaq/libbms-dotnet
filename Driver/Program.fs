@@ -9,6 +9,7 @@ let exists argv =
 
 let load file = file |> File.ReadAllLines
 
+///<summary>テストも兼ねて適当なBMSを読んでパースするだけのツール</summary>
 [<EntryPoint>]
 let main argv = 
     match argv |> exists with
