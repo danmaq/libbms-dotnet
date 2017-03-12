@@ -5,50 +5,50 @@ open System.Text.RegularExpressions
 open Models
 
 //////////////////////////////////////////////////////////////////////
+/// <summary>BMS パーサー。</summary>
 module Parser =
-    let regex pattern = new Regex(pattern, RegexOptions.IgnoreCase)
-
-    let setmeta expr pred setter =
-        let pattern = expr |> sprintf "^%s"
-        fun l (m: Meta) ->
-            let value =
-                Maybe.maybe {
-                    let! line = l |> Array.tryFindBack (regex pattern).IsMatch
-                    return String.length expr |> line.Substring
-                }
-            match value with
-                | None -> m
-                | Some v ->
-                    match v |> pred with
-                        | (true, _) -> m
-                        | (false, v) -> m |> setter v
+    /// <summary>指定したパターンに対応する正規表現オブジェクト。</summary>
+    let regex ptn = new Regex(ptn, RegexOptions.IgnoreCase)
+    /// <summary>指定したキーワードが先頭一致するかどうかの関数。</summary>
+    let fsearch keyword = (keyword |> sprintf "^%s" |> regex).IsMatch
+    /// <summary>指定したキーワードに対応するデータを取得する関数。</summary>
+    let predicate keyword conv =
+        let find = keyword |> fsearch |> Array.tryFindBack
+        let sub (s: string) = keyword |> String.length |> s.Substring
+        fun l ->
+            Maybe.maybe {
+                let! line = l |> find
+                let! result = line |> sub |> conv
+                return result
+            }
+    /// <summary>指定した値が存在するなら setter に値を引き渡す関数。</summary>
+    let callSetter set =
+        fun m -> function | Some v -> set v m | _ -> m
+    /// <summary>指定のメタ情報を抽出する関数。</summary>
+    let setMeta keyword conv set =
+        let pred = predicate keyword conv
+        let setter = callSetter set
+        fun l m -> l |> pred |> setter m
+    /// <summary>指定のメタ情報を一括抽出する関数一覧。</summary>
     let createMetaParsers =
-        let t = fun v -> (true, v)
-        let i v =
-            let mutable r = 0s
-            ((v, ref r) |> Int16.TryParse, r)
-        let f v =
-            let mutable r = 0.0f
-            ((v, ref r) |> Single.TryParse, r)
+        let t v = Some v
+        let i = TryParser.parseShort
+        let f = TryParser.parseSingle
         [|
-            setmeta "#GENRE " t (fun v m -> { m with genre = v })
-            setmeta "#TITLE " t (fun v m -> { m with title = v })
-            setmeta "#SUBTITLE " t (fun v m -> { m with subtitle = v })
-            setmeta "#ARTIST " t (fun v m -> { m with artist = v })
-            setmeta "#SUBARTIST " t (fun v m -> { m with subartist = v })
-            setmeta "#BPM " f (fun v m -> { m with bpm = v })
-            setmeta "#PLAYLEVEL " i (fun v m -> { m with playLevel = v })
-            setmeta "#VOLWAV " f (fun v m -> { m with volwav = v })
-            setmeta "#TOTAL " f (fun v m -> { m with volwav = v })
+            setMeta "#GENRE " t (fun v m -> { m with genre = v })
+            setMeta "#TITLE " t (fun v m -> { m with title = v })
+            setMeta "#SUBTITLE " t (fun v m -> { m with subtitle = v })
+            setMeta "#ARTIST " t (fun v m -> { m with artist = v })
+            setMeta "#SUBARTIST " t (fun v m -> { m with subartist = v })
+            setMeta "#BPM " f (fun v m -> { m with bpm = v })
+            setMeta "#PLAYLEVEL " i (fun v m -> { m with playLevel = v })
+            setMeta "#VOLWAV " f (fun v m -> { m with volwav = v })
+            setMeta "#TOTAL " f (fun v m -> { m with volwav = v })
         |]
-
-    let genre lines meta =
-        createMetaParsers |> Array.fold (fun a e -> e lines a) meta
-
-    let availableLine lines =
-        lines |> Array.filter (regex "^#").IsMatch
-
+    /// <summary>メタ情報を一括抽出する関数。</summary>
+    let parseMeta lines =
+        let fold = DEFAULT_META |> Array.fold (fun a e -> e lines a)
+        createMetaParsers |> fold
+    /// <summary>BMS文字列をパースする関数。</summary>
     let parse lines =
-        let lines = lines |> availableLine
-        Models.DEFAULT_META |> genre lines
- 
+        lines |> Array.filter ("#" |> fsearch) |> parseMeta

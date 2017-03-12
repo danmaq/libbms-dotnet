@@ -3,6 +3,7 @@
 open System
 open System.Collections.Generic
 
+///<summary>BMSパース用のデータモデル。</summary>
 module Models =
 
     ///<summary>プレイ形式。</summary>
@@ -87,7 +88,7 @@ module Models =
             ///<summary>リソース情報。</summary>
             res: Resources
             ///<summary>譜面情報。</summary>
-            notes: Dictionary<byte, int[]>[]
+            notes: (byte * uint16[])[]
         }
     
     ///<summary>小節ごとの解像度。</summary>
