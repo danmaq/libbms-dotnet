@@ -1,4 +1,5 @@
-﻿open System.IO
+﻿open System
+open System.IO
 open Danmaq.LibBMS
 
 //////////////////////////////////////////////////////////////////////
@@ -15,5 +16,6 @@ let main argv =
     match argv |> exists with
         | None -> failwith "Usage: Driver.exe bmsfile.bms"
         | Some f -> f |> load |> Parser.parse |> printfn "%A"
+    Console.ReadKey() |> ignore
     0 // return an integer exit code
 
