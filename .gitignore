@@ -6,6 +6,7 @@
 [Bb]in/
 packages/
 TestResults/
+.vs/
 
 # globs
 Makefile.in
@@ -38,3 +39,5 @@ Thumbs.db
 
 # dotCover
 *.dotCover
+
+BMS/

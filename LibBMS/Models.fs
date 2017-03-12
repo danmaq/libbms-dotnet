@@ -3,34 +3,35 @@
 open System
 open System.Collections.Generic
 
+///<summary>BMSパース用のデータモデル。</summary>
 module Models =
 
     ///<summary>プレイ形式。</summary>
     ///<remark>当面はSingleのみ対応予定。</remark>
     type PlayStyle =
         ///<summary>一人でプレイ。</summary>
-        | Single
+        | Single = 1
         ///<summary>二人で協力プレイ。</summary>
-        | Couple
+        | Couple = 2
         ///<summary>一人で複数鍵盤プレイ。</summary>
-        | Double
+        | Double = 3
 
     ///<summary>難易度表記。</summary>
     ///<remark>宣言のみで実際の難易度とは関係しません。</remark>
     type Difficulty =
-        | Beginner
-        | Normal
-        | Hyper
-        | Another
-        | Insane
+        | Beginner = 0
+        | Normal= 1
+        | Hyper = 2
+        | Another = 3
+        | Insane = 4
 
     ///<summary>判定表記。</summary>
     ///<remark>実際の判定はプレイヤー側のロジックに依存します。</remark>
     type Judge =
-        | VeryHard
-        | Hard
-        | Normal
-        | Easy
+        | VeryHard = 0
+        | Hard = 1
+        | Normal = 2
+        | Easy = 3
 
     ///<summary>BMS譜面のメタ情報。</summary>
     ///<remark>実際の評価はプレイヤー側のロジックに依存します。</remark>
@@ -87,7 +88,7 @@ module Models =
             ///<summary>リソース情報。</summary>
             res: Resources
             ///<summary>譜面情報。</summary>
-            notes: Dictionary<byte, int[]>[]
+            notes: (byte * uint16[])[]
         }
     
     ///<summary>小節ごとの解像度。</summary>
@@ -96,7 +97,7 @@ module Models =
     ///<summary>既定のメタ情報。</summary>
     let DEFAULT_META =
         {
-            player = Single
+            player = PlayStyle.Single
             genre = String.Empty
             title = String.Empty
             subtitle = null
