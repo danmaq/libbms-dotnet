@@ -3,6 +3,10 @@
 open System
 
 module TryParser =
+    let convert<'T> v =
+        try Convert.ChangeType(v, typeof<'T>) :?> 'T |> Some with
+            | _ -> None
+
     /// convenient, functional TryParse wrappers returning option<'a>
     let tryParseWith tryParseFunc = tryParseFunc >> function
         | true, v -> Some v
