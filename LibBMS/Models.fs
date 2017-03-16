@@ -1,7 +1,6 @@
 ﻿namespace Danmaq.LibBMS
 
 open System
-open System.Collections.Generic
 
 ///<summary>BMSパース用のデータモデル。</summary>
 module Models =
@@ -52,7 +51,7 @@ module Models =
             ///<summary>開始時BPM。</summary>
             bpm: float32
             ///<summary>ソフラン用BPM定義一覧。</summary>
-            bpms: float32[]
+            bpms: Map<string, float32>
             ///<summary>難易度定義。</summary>
             playLevel: int16
             ///<summary>難易度定義。</summary>
@@ -75,9 +74,9 @@ module Models =
             ///<summary>MIDI 楽曲ファイル名。</summary>
             midifile: string
             ///<summary>音声ファイル名一覧。</summary>
-            wavs: string[]
+            wavs: Map<string, string>
             ///<summary>BGA画像または動画ファイル名一覧。</summary>
-            bmps: string[]
+            bgas: Map<string, string>
         }
 
     ///<summary>BMSファイルの情報。</summary>
@@ -88,7 +87,7 @@ module Models =
             ///<summary>リソース情報。</summary>
             res: Resources
             ///<summary>譜面情報。</summary>
-            notes: (byte * uint16[])[]
+            notes: Map<byte, string[]>[]
         }
     
     ///<summary>小節ごとの解像度。</summary>
@@ -104,10 +103,21 @@ module Models =
             artist = String.Empty
             subartist = null
             bpm = 130.0f
-            bpms = [||]
+            bpms = Map.empty
             playLevel = 1s
             difficulty = Difficulty.Normal
             rank = Judge.Normal
             volwav = 100.0f
             total = 200.0f
         }
+
+            ///<summary>既定のメタ情報。</summary>
+    let DEFAULT_RESOURCES =
+        {
+            banner = null
+            stagefile = null
+            midifile = null
+            wavs = Map.empty
+            bgas = Map.empty
+        }
+

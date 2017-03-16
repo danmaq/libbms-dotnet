@@ -56,6 +56,7 @@
     <Content Include="packages.config" />
     <Compile Include="Maybe.fs" />
     <Compile Include="TryParser.fs" />
+    <Compile Include="Regex.fs" />
     <Compile Include="Models.fs" />
     <Compile Include="Parser.fs" />
   </ItemGroup>
